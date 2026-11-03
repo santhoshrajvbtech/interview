@@ -1,0 +1,15 @@
+package com.wipro.core_java_handons.collections;
+
+import java.util.HashSet;
+
+public class CustomerRef {
+    public static void main(String[] args) {
+
+        HashSet<Customer> set = new HashSet<>();
+
+        set.add(new Customer(1,"srv"));
+        set.add(new Customer(1,"srv"));
+        System.out.println(set.size());
+        set.stream().forEach(c-> System.out.println(c.getName()));
+    }
+}
