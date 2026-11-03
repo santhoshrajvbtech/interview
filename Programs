@@ -1,0 +1,110 @@
+package com.wipro.core_java_handons.basic;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class Programs {
+    public static void main(String[] args) {
+        Programs pg = new Programs();
+        pg.evenNumber();
+        pg.countWords();
+        pg.countVowels();
+        pg.reversWordsOrder();
+        pg.reversWordsandOrder();
+        pg.sorting();
+        pg.firstNonRepeatedCharacter();
+    }
+
+    public void evenNumber() {
+        List<Integer> noList = Arrays.asList(1,2,4,5,6,7,8,9);
+        List<Integer> evenList =  noList
+            .stream()
+            .filter(no-> no %2 ==0)
+            .toList();
+        evenList.stream().forEach(System.out::println);
+    }
+
+    public void countWords(){
+        String text = "apple banana apple orange grapes grapes";
+
+        Map<String, Long> count = Arrays.stream(text.split(" "))
+                .collect(Collectors.groupingBy(Function.identity(),
+                        Collectors.counting()));
+        System.out.println(count);
+    }
+
+    public void countVowels(){
+        String text = "apple banana apple orange grapes grapes";
+        Map<Character, Long> count  =
+                text.trim().toLowerCase().chars().mapToObj(c-> (char) c)
+                        .filter(ch -> "aeiou".indexOf(ch) !=-1)
+                        .collect(Collectors.groupingBy(Function.identity(),
+                                Collectors.counting()));
+
+        System.out.println(count);
+    }
+
+    public void reversWordsOrder(){
+        String text = "Hello Java 8 world";
+        String revered = Arrays
+                .stream(text.trim().split("\\s+"))
+                .collect(Collectors.collectingAndThen(Collectors.toList(),
+                        list-> {
+                            Collections.reverse(list);
+                            return String.join(" ", list);
+                        }));
+        System.out.println(revered);
+    }
+    public void reversWordsandOrder(){
+        String text = "Hello Java 8 world";
+        String revered = Arrays
+                .stream(text.trim().split("\\s+"))
+                .map(word-> new StringBuilder(word).reverse().toString())
+                .collect(Collectors.collectingAndThen(Collectors.toList(),
+                        list-> {
+                            Collections.reverse(list);
+                            return String.join(" ", list);
+                        }));
+        System.out.println(revered);
+    }
+
+    public void sorting() {
+
+        String text = "Hello Java java vansdsof ss8   world";
+        Arrays.stream(text.split(" "))
+                .toList()
+                .stream().sorted(Comparator.comparingInt(String::length))
+                .forEach(System.out::println);
+    }
+
+    public void firstNonRepeatedCharacter(){
+        String text ="santhosh";
+
+        Character result = text
+                .chars()
+                .mapToObj(c-> (char) c)
+                .collect(Collectors.groupingBy(Function.identity(),LinkedHashMap::new,
+                        Collectors.counting()))
+                .entrySet()
+                .stream().filter(e -> e.getValue() ==1)
+                .map(Map.Entry::getKey)
+                .findFirst().orElse(null);
+
+        System.out.println(result);
+
+        List<Map.Entry<Character, Long>> results= text
+                .chars()
+                .mapToObj(c-> (char) c)
+                .collect(Collectors.groupingBy(Function.identity(),LinkedHashMap::new,
+                        Collectors.counting()))
+                .entrySet()
+                .stream().filter(e -> e.getValue() ==1)
+                .toList();
+
+        System.out.println(results);
+
+
+    }
+}
+
