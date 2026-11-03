@@ -1,0 +1,90 @@
+package com.wipro.core_java_handons.threads;
+
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.IntStream;
+
+public class MultithreadedRef {
+
+    public static void main(String[] args) {
+         int totalThreads=3;
+         int maxRounds=3;
+        RoundRobinLock rr = new RoundRobinLock(3,3);
+
+        for (int i =1; i<=totalThreads;i++) {
+            final int id = i;
+            new Thread(()-> rr.print(id), "T"+id).start();
+        }
+
+    }
+
+}
+
+class RoundRobinLock {
+    private int turn =1;
+    private final int totalThreads;
+    private final int maxRounds;
+    private final Lock lock = new ReentrantLock();
+    private final Condition[] conditions;
+
+
+    RoundRobinLock(int totalThreads, int maxRounds) {
+        this.totalThreads = totalThreads;
+        this.maxRounds = maxRounds;
+        conditions = new Condition[totalThreads+1];
+        for (int index =0; index<= totalThreads;index++) {
+            conditions[index] = lock.newCondition();
+        }
+    }
+
+    public void print(int threadId){
+        lock.lock();
+        try {
+            for (int index =0; index<= maxRounds;index++) {
+                while (turn != threadId) {
+                    conditions[threadId].await();
+                }
+                System.out.println("Thread - "+ threadId + " executing round " + (index+1));
+
+                turn = (turn%totalThreads)+1;
+                System.out.println("updated round" + turn);
+                conditions[turn].signal();
+            }
+
+        }catch (InterruptedException ex) {
+            System.out.println(ex.getMessage());
+        }finally {
+            lock.unlock();
+        }
+
+    }
+}
+
+class RoundRobin{
+    private int turn =1;
+    private final int totalThreads;
+    private final int maxRounds;
+
+    public RoundRobin(int totalThreads, int maxRounds) {
+        this.totalThreads = totalThreads;
+        this.maxRounds = maxRounds;
+    }
+
+    public synchronized void print(int threadId){
+        for (int i=0;i <maxRounds;i++) {
+            while (turn !=threadId){
+                try{
+                    wait();
+                } catch (InterruptedException ex) {
+                    System.out.println(ex.getMessage());
+                }
+            }
+            System.out.println("Thread - " + threadId + " exectuting round "+(i+1));
+            turn = (turn % totalThreads)+1;
+            notifyAll();
+        }
+
+    }
+
+}
