@@ -1,0 +1,85 @@
+package com.wipro.core_java_handons.sorting;
+
+public class MergeSort {
+
+    public static void main(String[] args) {
+        MergeSort ms = new MergeSort();
+        ms.sort();
+    }
+
+    private void sort() {
+
+        int [] arr = {5,2,3,1};
+        int size = arr.length;
+        printArr(size, arr);
+        mergesort(arr, 0,size-1);
+        printArr(size, arr);
+
+    }
+
+    private static void printArr(int size, int[] arr) {
+        for (int i = 0; i < size; ++i){
+            System.out.print(arr[i] + " ");
+        }
+        System.out.println();
+    }
+
+    private void mergesort(int[] arr, int left, int right) {
+        // find the middle point
+        if(left < right) {
+            int mid= (left+ right)/2;
+            mergesort(arr,left,mid);
+            mergesort(arr,mid+1,right);
+            merge(arr, left, mid, right);
+        }
+
+    }
+
+    private void merge(int[] arr, int start, int mid, int end) {
+        // find sizes of two arrays to be merged
+        int leftSize = mid - start + 1;
+        int rightSize = end - mid;
+
+        // create temp arrays
+
+        int[] leftArr = new int[leftSize];
+        int[] rightArry = new int[rightSize];
+
+        // copy data to temp arrays
+        for (int index = 0; index < leftSize; ++index) {
+            leftArr[index] = arr[start + index];
+        }
+
+        for (int index = 0; index < rightSize; ++index) {
+            rightArry[index] = arr[mid + 1 + index];
+        }
+
+        // Initial indices of first and second subarrays
+        int leftIndex = 0, rightIndex = 0;
+
+        // Initial index of merged subarray array
+        int mergedIndex = start;
+
+        while (start < leftSize && end < rightSize) {
+            if (leftArr[leftIndex] <= rightArry[rightIndex]) {
+                arr[mergedIndex] = leftArr[leftIndex];
+                leftIndex++;
+            } else {
+                arr[mergedIndex] = rightArry[rightIndex];
+                rightIndex++;
+            }
+            mergedIndex++;
+        }
+
+        while (leftIndex < leftSize) {
+            arr[mergedIndex] = leftArr[leftIndex];
+            leftIndex++;
+            mergedIndex++;
+        }
+        while (rightIndex < rightSize) {
+            arr[mergedIndex] = rightArry[rightIndex];
+            rightIndex++;
+            mergedIndex++;
+        }
+    }
+}
