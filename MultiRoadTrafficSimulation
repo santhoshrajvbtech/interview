@@ -1,0 +1,92 @@
+package com.wipro.core_java_handons.threads;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+// continous car generator / task generator
+public class MultiRoadTrafficSimulation {
+    public static void main(String[] args) throws InterruptedException {
+        int totalRoads = 4;
+        MultiRoadSignal signal = new MultiRoadSignal(totalRoads);
+        for(int roadId=0; roadId< totalRoads;roadId++) {
+            int finalRoadId = roadId;
+            // create task / car for the each road
+            Runnable task = () -> {
+                try {
+                    signal.moveOnRoad(finalRoadId,Thread.currentThread().getName());
+                } catch (InterruptedException ex) {
+                    System.out.println("ex");
+                    Thread.currentThread().interrupt();
+                }
+            };
+
+            for(int i=1;i<=3;i++) {
+                new Thread(task, "Car R-"+roadId+"-"+i).start();
+            }
+        }
+
+        for(int i=1;i<8;i++) {
+           Thread.sleep(2000);
+           signal.swicthSignal();
+        }
+
+
+    }
+
+}
+class MultiRoadSignal {
+    // define lock
+    // define conditions as list - road1 road 2 road3 road 4
+    // define total no of roads
+    // default green road =
+
+    private final Lock lock = new ReentrantLock();
+    private final List<Condition> roadConditions = new ArrayList<>();
+    private final int totalRoads;
+    private int greenRoadIndex =0;
+
+    MultiRoadSignal(int totalRoads) {
+        this.totalRoads = totalRoads;
+        for (int i=0; i<totalRoads;i++) {
+            roadConditions.add(lock.newCondition());
+        }
+    }
+
+
+    // moveonroad
+
+    public void moveOnRoad(int roadId, String carName) throws InterruptedException {
+        // aquire lock
+        // check for the wait for green sigal on road
+        // move on road
+        // release lock
+        lock.lock();
+        try {
+            while (greenRoadIndex != roadId) {
+                System.out.println(carName + " is waiting on road " + roadId + "Red");
+                roadConditions.get(roadId).await();
+            }
+            System.out.println(carName + " is moving on Road" + roadId);
+        } finally {
+            lock.unlock();
+        }
+    }
+    // switch signal
+
+    public void swicthSignal() {
+        // aquire lock
+        // update green signal to a road
+        // release signal to the green road
+        // unlock
+        lock.lock();
+        try {
+            greenRoadIndex = (greenRoadIndex+1)%totalRoads;
+            System.out.println("\n======Green signal for road" +greenRoadIndex +"=========");
+            roadConditions.get(greenRoadIndex).signalAll();
+        }finally {
+            lock.unlock();
+        }
+    }
+}
