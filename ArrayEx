@@ -1,0 +1,60 @@
+package com.wipro.core_java_handons.basic;
+
+public class ArrayEx {
+
+
+    public static void main(String[] args) {
+        ArrayEx ex = new ArrayEx();
+        ex.alternatePostiveNegativeNumbers();
+    }
+
+    private void alternatePostiveNegativeNumbers() {
+        ArrayEx ex = new ArrayEx();
+        int arr[]   = {3,1,-2,-5,2,-4};
+        ex.alternateInPlace(arr);
+        for(int num : arr)
+        {System.out.print(num+ " ");
+        }
+    }
+
+    public void alternateInPlace(int arr[] ) {
+
+        // check even / odd index
+        // index%2
+        // 0-> even 1-> odd
+        int max = arr.length;
+
+        for(int index=0; index<max; index++) {
+            if (index % 2== 0) {
+                // even index
+                if(arr[index] < 0) {
+                    int j= index+1;
+                while(j<max && arr[j]<0) j++;
+                if(j==max) break;
+                rightRotate(arr,index,j);
+
+                }
+
+            } else {
+                // odd index
+                if(arr[index]>0) {
+                    // find next negative
+                    int j= index+1;
+                    while(j<max && arr[j] >= 0) j++;
+                    if(j == max)  break;
+                    rightRotate(arr,index,j);
+
+                }
+            }
+        }
+    }
+
+    // shift arrays to right
+    private void rightRotate(int[] arr, int start, int end) {
+        int temp = arr[end];
+        for(int k =end; k> start;k--){
+            arr[k]=arr[k-1];
+        }
+        arr[start]=temp;
+    }
+}
