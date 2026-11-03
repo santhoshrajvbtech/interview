@@ -1,0 +1,27 @@
+package com.interview.prep.leet;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+public class SumOfTwoNumbers {
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(sumOftwo(new int[] { 9, 2 , 15, 7}, 9)));
+    }
+
+    public static int[] sumOftwo(int[] nums, int target) {
+
+        Map<Integer, Integer> numMap = new HashMap();
+
+        for (int index = 0; index < nums.length; index++) {
+         int complement = target - nums[index];
+
+         if(numMap.containsKey(complement)){
+            return new int[] {numMap.get(complement), index};
+         }
+         numMap.put(nums[index],index);
+        }
+
+        return new int[0];
+    }
+}
